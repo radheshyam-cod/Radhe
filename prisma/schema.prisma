@@ -1,0 +1,141 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String           @id @default(cuid())
+  phone           String           @unique
+  name            String?
+  school          String?
+  class           String?
+  year            String? // Keeping for backward compatibility, but 'class' is preferred
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  notes           Notes[]
+  mastery         Mastery[]
+  attempts        Attempts[]
+  revisionSchedules RevisionSchedule[]
+  revisionLogs    RevisionLog[]
+}
+
+model Notes {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String?
+  content   String   @db.Text
+  fileUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  topics    Topics[]
+}
+
+model Topics {
+  id        String   @id @default(cuid())
+  name      String
+  notesId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  notes     Notes    @relation(fields: [notesId], references: [id])
+  subtopics Subtopic[]
+  mastery   Mastery[]
+  questions Question[]
+  flashcards Flashcard[]
+  prerequisites Prerequisite[] @relation("TopicPrerequisites")
+  requiredFor   Prerequisite[] @relation("TopicRequiredFor")
+  revisionSchedules RevisionSchedule[]
+}
+
+model Subtopic {
+  id        String   @id @default(cuid())
+  topicId   String
+  name      String
+  content   String?  @db.Text // Feynman explanation, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  topic     Topics   @relation(fields: [topicId], references: [id])
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  topicId     String
+  question    String   @db.Text
+  options     String[] // JSON array of options
+  correctAnswer String
+  explanation String?  @db.Text
+  difficulty  String   // EASY, MEDIUM, HARD
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  topic       Topics   @relation(fields: [topicId], references: [id])
+  attempts    Attempts[]
+}
+
+model Flashcard {
+  id        String   @id @default(cuid())
+  topicId   String
+  front     String   @db.Text
+  back      String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  topic     Topics   @relation(fields: [topicId], references: [id])
+}
+
+model Prerequisite {
+  id          String   @id @default(cuid())
+  topicId     String
+  requiredId  String
+  topic       Topics   @relation("TopicPrerequisites", fields: [topicId], references: [id])
+  required    Topics   @relation("TopicRequiredFor", fields: [requiredId], references: [id])
+}
+
+model Mastery {
+  id        String   @id @default(cuid())
+  userId    String
+  topicId   String
+  score     Float    // 0 to 100
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  topic     Topics   @relation(fields: [topicId], references: [id])
+
+  @@unique([userId, topicId])
+}
+
+model Attempts {
+  id          String   @id @default(cuid())
+  userId      String
+  questionId  String?
+  isCorrect   Boolean
+  solvingTime Int      // in seconds
+  hesitation  Int      // in seconds
+  confidence  Float    // 0 to 1
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
+  question    Question? @relation(fields: [questionId], references: [id])
+}
+
+model RevisionSchedule {
+  id        String   @id @default(cuid())
+  userId    String
+  topicId   String
+  dueDate   DateTime
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  topic     Topics   @relation(fields: [topicId], references: [id])
+}
+
+model RevisionLog {
+  id        String   @id @default(cuid())
+  userId    String
+  topicId   String
+  reviewedAt DateTime @default(now())
+  duration  Int      // in seconds
+  user      User     @relation(fields: [userId], references: [id])
+}

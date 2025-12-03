@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Dark Nebula Theme - Enforced */
+    --background: 240 30% 10%; /* #121221 - Deep Space Blue */
+    --foreground: 210 40% 98%; /* #f0f4f8 - Starlight White */
+
+    --card: 240 25% 15%; /* #1c1c30 - Nebula Card */
+    --card-foreground: 210 40% 98%;
+
+    --popover: 240 30% 10%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 190 100% 50%; /* #00FFFF - Neon Cyan */
+    --primary-foreground: 240 30% 10%;
+
+    --secondary: 260 50% 20%; /* #2a1a4a - Deep Purple */
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 240 20% 20%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 190 100% 50%;
+    --accent-foreground: 240 30% 10%;
+
+    --destructive: 0 80% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 240 20% 25%;
+    --input: 240 20% 20%;
+    --ring: 190 100% 50%;
+
+    --radius: 0.75rem;
+  }
+
+  /* Remove .dark class requirement, apply globally */
+  .dark {
+    /* Same as root, kept for compatibility */
+    --background: 240 30% 10%;
+    --foreground: 210 40% 98%;
+    --card: 240 25% 15%;
+    --card-foreground: 210 40% 98%;
+    --popover: 240 30% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 190 100% 50%;
+    --primary-foreground: 240 30% 10%;
+    --secondary: 260 50% 20%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 240 20% 20%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 190 100% 50%;
+    --accent-foreground: 240 30% 10%;
+    --destructive: 0 80% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 240 20% 25%;
+    --input: 240 20% 20%;
+    --ring: 190 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
